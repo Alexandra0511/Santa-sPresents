@@ -15,14 +15,26 @@ public class Gift {
         this.category = category;
     }
 
+    /**
+     * Getter pentru numele cadoului
+     * @return nume produs
+     */
     public String getProductName() {
         return productName;
     }
 
+    /**
+     * Getter pentru pretul cadoului
+     * @return pret
+     */
     public double getPrice() {
         return price;
     }
 
+    /**
+     * Getter pentru tipul cadoului
+     * @return categoria produsului
+     */
     public Category getCategory() {
         return category;
     }

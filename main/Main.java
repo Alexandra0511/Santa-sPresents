@@ -1,6 +1,7 @@
 package main;
 
 import checker.Checker;
+import common.Constants;
 import implementations.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,7 +25,7 @@ public final class Main {
      *          the arguments used to call the main method
      */
     public static void main(final String[] args) throws IOException {
-        for (int i = 1; i <= 25; i++) {
+        for (int i = 1; i <= Constants.TESTS_NUMBER; i++) {
             String testInput = "tests/test" + i + ".json";
             Reader reader = new Reader(testInput);
             Input input = reader.readFile();
@@ -35,33 +36,29 @@ public final class Main {
             JSONObject jsonObject = new JSONObject();
             JSONArray arrayResult = new JSONArray();
             arrayResult.add(fileWriter.writeFile());
-            for(Child child : input.getChildren()) {
-                System.out.print(child.getNextYears());
-            }
-            System.out.println();
-            System.out.println(i);
+
             for (int j = 0; j < input.getNumberOfYears(); j++) {
                 AnnualChange annualChange = input.getAnnualChanges().get(j);
                 input.setSantaBudget(annualChange.getNewSantaBudget());
                 for (Child child : annualChange.getNewChildren()) {
                     child.setAge(child.getAge() - 1);
                     input.addNewChildren(child);
-                    for(int k = j; k < input.getNumberOfYears(); k++) {
-                        List<Child> childWithId = input.getAnnualChanges().get(k).getChildrenUpdates();
+                    for (int k = j; k < input.getNumberOfYears(); k++) {
+                        List<Child> childWithId = input.getAnnualChanges()
+                                .get(k).getChildrenUpdates();
 
-                        if(childWithId.stream().anyMatch((x) -> child.getId() == x.getId())) {
+                        if (childWithId.stream().anyMatch((x) -> child.getId() == x.getId())) {
                             child.addNextYears(childWithId.stream()
                                     .filter((x) -> child.getId() == x.getId())
                                     .collect(Collectors.toList())
                                     .get(0).getGiftsPreferences());
-                        }
-                        else {
+                        } else {
                             child.addNextYears(new ArrayList<>());
                         }
                     }
                     input.addObserver(child);
                 }
-                input.getChildren().removeIf((x) -> x.getAge() == 19);
+                input.getChildren().removeIf((x) -> x.getAge() == Constants.TEEN_MAX_AGE + 1);
                 for (Gift gift : annualChange.getNewGifts()) {
                     input.getGifts().add(gift);
                 }

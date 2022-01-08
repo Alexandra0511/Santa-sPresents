@@ -22,10 +22,13 @@ public class Reader {
         this.inputPath = inputPath;
     }
 
-    public String getInputPath() {
-        return inputPath;
-    }
-
+    /**
+     * Citeste fisierul de input si interpreteaza datele, retinand numarul de ani pentru
+     * simularea implementarii, bugetul mosului, lista de copii, lista de cadouri si
+     * lista de schimbari anuale, care sunt introduse ca si campuri pentru obiectul de tip
+     * input.
+     * @return input
+     */
     public Input readFile() {
         JSONParser jsonParser = new JSONParser();
         List<Child> children = new ArrayList<>();
@@ -111,28 +114,32 @@ public class Reader {
                     } else {
                         childrenUpdates.add(new Child(id,
                                 null, null, 0, null,
-                                (double) ((Long) ((JSONObject) jsonChild).get("niceScore")).intValue(),
+                                (double) ((Long) ((JSONObject) jsonChild)
+                                        .get("niceScore")).intValue(),
                                 giftsPreferences
                         ));
                     }
-                    if(children.stream().anyMatch((x) -> x.getId() == id)) {
+                    if (children.stream().anyMatch((x) -> x.getId() == id)) {
                         if (ids.stream().filter((x) -> x == id).count() >= 2) {
-                            children.stream().forEach((x) -> System.out.println(x.getId()));
                             Child child = children.stream().filter((x) -> x.getId() == id)
                                     .collect(Collectors.toList()).get(0);
                             List<List<Category>> preferences = child.getNextYears();
-                            List<Category> lastPreferences = preferences.get(preferences.size() - 1);
-                            giftsPreferences = Stream.concat(giftsPreferences.stream(), lastPreferences.stream())
+                            List<Category> lastPreferences = preferences
+                                    .get(preferences.size() - 1);
+                            giftsPreferences = Stream.concat(giftsPreferences.stream(),
+                                            lastPreferences.stream())
                                     .distinct()
                                     .collect(Collectors.toList());
                             preferences.remove(preferences.size() - 1);
                         }
                         List<Category> finalGiftsPreferences = giftsPreferences;
                         children.stream().filter((x) -> x.getId() == id)
-                                .findFirst().stream().forEach(x -> x.addNextYears(finalGiftsPreferences));
+                                .findFirst().stream()
+                                .forEach(x -> x.addNextYears(finalGiftsPreferences));
                     }
                 }
-                children.stream().filter((x) -> !ids.contains(x.getId())).forEach((x) -> x.addNextYears(new ArrayList<>()));
+                children.stream().filter((x) -> !ids.contains(x.getId()))
+                        .forEach((x) -> x.addNextYears(new ArrayList<>()));
 
                 annualChanges.add(new AnnualChange(
                         ((Long) ((JSONObject) jsonAnnualChange).get("newSantaBudget"))

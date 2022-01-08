@@ -2,6 +2,7 @@ package implementations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import common.Constants;
 import enums.Category;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,11 +20,11 @@ public class Writer {
     private final FileWriter file;
     private Input input;
 
-    public Input getInput() {
-        return input;
-    }
-
-    public void setInput(Input input) {
+    /**
+     * Setter pentru input
+     * @param input inputul setat
+     */
+    public void setInput(final Input input) {
         this.input = input;
     }
 
@@ -31,14 +32,18 @@ public class Writer {
         this.file = new FileWriter(path);
     }
 
-    public JSONObject writeFile() throws IOException {
+    /**
+     * Formateaza fisierul de output, introducand informatiile cerute
+     * @return JSONObiect
+     */
+    public JSONObject writeFile() {
         JSONArray children = new JSONArray();
         Map<Child, List<Gift>> receivedGiftsMap = input.receivedGifts();
         Map<Child, Double> budgetMap = input.budget();
         JSONObject childrenOutput = new JSONObject();
         for (Child child : input.getChildren()) {
             JSONArray receivedGifts = new JSONArray();
-            if (child.getAge() <= 18) {
+            if (child.getAge() <= Constants.TEEN_MAX_AGE) {
                 Map childOutput = new LinkedHashMap();
                 childOutput.put("id", child.getId());
                 childOutput.put("lastName", child.getLastName());
@@ -69,6 +74,10 @@ public class Writer {
         return childrenOutput;
     }
 
+    /**
+     * Se face indentarea ouputului si se inchide JSON-ul
+     * @param array JSONObject-ul primit
+     */
     public void closeJSON(final JSONObject array) {
         try {
             ObjectMapper mapper = new ObjectMapper();
